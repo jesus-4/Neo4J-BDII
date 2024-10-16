@@ -21,25 +21,19 @@ class DAO:
         with self.driver.session() as session:
             return session.execute_read(func, *args)
 
-
 def crear_nodos_ejemplo(session):
 
         # Crear Zonas
         session.execute_write(crear_zona, "Z1", "URL", "Chilecito", "50 km²", "Agua, Electricidad, Transporte")
         session.execute_write(crear_zona, "Z2", "URL", "Cordoba", "100 km²", "Agua, Electricidad")
-        session.execute_write(crear_zona, "Z1", "URL", "Chilecito", "150 km²", "Agua, Electricidad, Transporte")
-        session.execute_write(crear_zona, "Z2", "URL", "Cordoba", "200 km²", "Agua, Electricidad")
-        session.execute_write(crear_zona, "Z1", "URL", "Chilecito", "75 km²", "Agua, Electricidad, Transporte")
-        session.execute_write(crear_zona, "Z3", "URL", "Cordoba", "120 km²", "Agua, Electricidad")
-
 
         # Crear Terrenos
         session.execute_write(crear_terreno, "T1", "Urbana", 50000, 1500, "En Venta", "Residencial", "2024-09-01", "Terreno con vista al parque")
         session.execute_write(crear_terreno, "T2", "Rural", 75000, 2000, "En Venta", "Comercial", "2024-08-10", "Terreno ideal para negocios")
-        session.execute_write(crear_terreno, "T3", "Rural", 50000, 1500, "En Venta", "Residencial", "2024-07-01", "Terreno cerca de la plaza")
+        session.execute_write(crear_terreno, "T3", "Urbana", 50000, 1500, "En Venta", "Residencial", "2024-07-01", "Terreno cerca de la plaza")
         session.execute_write(crear_terreno, "T4", "Rural", 75000, 2000, "En Venta", "Comercial", "2024-06-10", "Terreno cerca del lago")
-        session.execute_write(crear_terreno, "T5", "Rural", 50000, 1500, "En Venta", "Residencial", "2024-05-01", "Terreno con vista al cristo")
-        session.execute_write(crear_terreno, "T6", "Rural", 75000, 2000, "En Venta", "Comercial", "2024-04-10", "Terreno ideal para contrunccion")
+        session.execute_write(crear_terreno, "T5", "Urbana", 50000, 1500, "En Venta", "Residencial", "2024-05-01", "Terreno con vista al cristo")
+        session.execute_write(crear_terreno, "T6", "Alcaldesa", 75000, 2000, "En Venta", "Comercial", "2024-04-10", "Terreno ideal para contrunccion")
 
         # Crear Propietarios
         session.execute_write(crear_propietario, "P1", "Claramonte Jesus", "jClaramonte@example.com", "123456789")
@@ -65,12 +59,11 @@ def crear_relaciones_ejemplo(session):
         session.execute_write(asociar_terreno_zona, "T3", "Z1")
         session.execute_write(asociar_terreno_zona, "T4", "Z2")
         session.execute_write(asociar_terreno_zona, "T5", "Z1")
-        session.execute_write(asociar_terreno_zona, "T6", "Z3")
+        session.execute_write(asociar_terreno_zona, "T6", "Z2")
 
         # Asignar Empleados a Zonas
         session.execute_write(asignar_empleado_zona, "E1", "Z1")
         session.execute_write(asignar_empleado_zona, "E2", "Z2")
-        session.execute_write(asignar_empleado_zona, "E1", "Z3")
 
 
         # Vincular Terrenos a Propietarios
@@ -94,7 +87,6 @@ def crear_relaciones_ejemplo(session):
         session.execute_write(cliente_interactua_empleado, "C2", "E2")
         session.execute_write(cliente_interactua_empleado, "C2", "E1")
         session.execute_write(cliente_interactua_empleado, "C1", "E2")
-
 
 
 
