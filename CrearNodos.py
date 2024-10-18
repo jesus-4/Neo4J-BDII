@@ -1,9 +1,9 @@
-
 # Funciones para crear nodos
-def crear_terreno(tx, id_terreno, ubicacion, precio, tamano, estado, tipo, fecha_de_listado, descripcion):
+def crear_terreno(tx, id_terreno, tipo_zona, ubicacion, precio, tamano, estado, tipo, fecha_de_listado, descripcion):
     query = (
         "CREATE (t:Terreno {"
         "ID_terreno: $id_terreno, "
+        "Tipo_zona: $tipo_zona, "
         "Ubicacion: $ubicacion, "
         "Precio: $precio, "
         "Tamaño: $tamaño, "
@@ -14,7 +14,8 @@ def crear_terreno(tx, id_terreno, ubicacion, precio, tamano, estado, tipo, fecha
         "})"
     )
     tx.run(query, 
-           id_terreno=id_terreno, 
+           id_terreno=id_terreno,
+           tipo_zona=tipo_zona, 
            ubicacion=ubicacion, 
            precio=precio, 
            tamaño=tamano,
@@ -23,20 +24,18 @@ def crear_terreno(tx, id_terreno, ubicacion, precio, tamano, estado, tipo, fecha
            fecha_de_listado=fecha_de_listado, 
            descripcion=descripcion)
 
-def crear_zona(tx, id_zona, nombre_zona, tipo_zona, tamano_zona, infraestructura):
+def crear_zona(tx, id_zona, nombre_zona, tamano_zona, infraestructura):
     query = (
         "CREATE (z:Zona {"
         "ID_zona: $id_zona, "
         "Nombre_zona: $nombre_zona, "
-        "Tipo_zona: $tipo_zona, "
         "Tamaño_zona: $tamaño_zona, "
         "Infraestructura: $infraestructura"
         "})"
     )
     tx.run(query, 
            id_zona=id_zona, 
-           nombre_zona=nombre_zona, 
-           tipo_zona=tipo_zona, 
+           nombre_zona=nombre_zona,  
            tamaño_zona=tamano_zona,
            infraestructura=infraestructura)
 

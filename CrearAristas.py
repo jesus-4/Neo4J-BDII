@@ -33,4 +33,4 @@ def cliente_interactua_empleado(tx, id_cliente, id_empleado):
         "MATCH (c:Cliente {ID_cliente: $id_cliente}), (e:Empleado {ID_empleado: $id_empleado}) "
         "CREATE (c)-[:INTERACTUA_CON]->(e)"
     )
-    tx.run(query, id_cliente=id_cliente, id_empleado=id_empleado)
+    tx.run(query, id_cliente=id_cliente, id_empleado=id_empleado)uery, id_cliente=id_cliente, id_empleado=id_empleado)
