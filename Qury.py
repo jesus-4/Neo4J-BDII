@@ -1,4 +1,49 @@
-# Obtener detalles de una zona por ID
+
+def get_zonas_provincias(tx):
+    query = (
+        "MATCH (z:Zona)-[:PERTENECE_A]->(p:Provincia) "
+        "RETURN z.Nombre_zona AS Zona, p.Nombre_provincia AS Provincia"
+    )
+    result = tx.run(query)
+    formatted_result = []
+    for p in result:
+        formatted_result.append(f"Zona:{ p["Zona"]}          Provincia:{p["Provincia"]} ")
+    return "\n".join(formatted_result)
+
+def get_terrenos_por_zona(tx):
+    query = (
+        "MATCH (z:Zona)<-[:UBICADO_EN]-(t:Terreno) "
+        "RETURN z.Nombre_zona AS Zona, t.ID_terreno AS Terreno, t.Estado AS Estado"
+    )
+    result = tx.run(query)
+    formatted_result = []
+    for p in result:
+        formatted_result.append(f"Zona:{ p["Zona"]}     Terreno:{p["Terreno"]}      Estado:{p["Estado"]} ")
+    return "\n".join(formatted_result)
+
+def get_propietarios_terrenos(tx):
+    query = (
+        "MATCH (t:Terreno)-[:POSEIDO_POR]->(p:Propietario) "
+        "RETURN p.Nombre_completo AS Propietario, t.ID_terreno AS Terreno"
+    )
+    result = tx.run(query)
+    formatted_result = []
+    for p in result:
+        formatted_result.append(f"Propietario:{ p["Propietario"]}     Terreno:{p["Terreno"]}")
+    return "\n".join(formatted_result)
+
+
+def get_empleados_por_zona(tx):
+    query = (
+        "MATCH (e:Empleado)-[:ASIGNADO_A]->(z:Zona) "
+        "RETURN e.Nombre_completo AS Empleado, z.Nombre_zona AS Zona"
+    )
+    result = tx.run(query)
+    formatted_result = []
+    for p in result:
+        formatted_result.append(f"Empleado:{ p["Empleado"]}     Zona:{p["Zona"]}")
+    return "\n".join(formatted_result)
+
 
 def get_zone_by_id(tx, id_zona):
    query = (
@@ -16,7 +61,7 @@ def get_zone_by_id(tx, id_zona):
 # Obtener todos los terrenos en una zona específica
 def get_terrenos_by_zone(tx, id_zona):
     query = (
-        "MATCH (z:Zona {ID_zona: $id_zona})<-[:PERTENECE_A]-(t:Terreno) "
+        "MATCH (z:Zona {ID_zona: $id_zona})<-[:UBICADO_EN]-(t:Terreno) "
         "RETURN t"
     )
     result = tx.run(query, id_zona=id_zona)
@@ -25,7 +70,7 @@ def get_terrenos_by_zone(tx, id_zona):
     for terreno in terrenos:
         formatted_result.append(f"Terreno ID: {terreno['ID_terreno']}, Tipo_zona: {terreno['Tipo_zona']}, "
                                 f"Ubicación: {terreno['Ubicacion']}, Precio: {terreno['Precio']}, "
-                                f"Tamaño: {terreno['Tamaño']}, Estado: {terreno['Estado']},Tipo: {terreno['TipO']}, "
+                                f"Tamaño: {terreno['Tamaño']}, Estado: {terreno['Estado']},Tipo: {terreno['Tipo']}, "
                                 f"Fecha de listado: {terreno['Fecha_de_listado']}")
     return "\n".join(formatted_result)
 
@@ -34,7 +79,7 @@ def get_terrenos_by_zone(tx, id_zona):
 # Obtener los propietarios de un terreno
 def get_propietario_by_terreno(tx, id_terreno):
     query = (
-        "MATCH (p:Propietario)-[:POSEE]->(t:Terreno {ID_terreno: $id_terreno}) "
+        "MATCH (t:Terreno {ID_terreno: $id_terreno})-[:POSEIDO_POR]->(p:Propietario) "
         "RETURN p"
     )
     result = tx.run(query, id_terreno=id_terreno)
@@ -52,7 +97,7 @@ def get_propietario_by_terreno(tx, id_terreno):
 
 def get_terrenos_by_propietario(tx, id_propietario):
     query = (
-        "MATCH (p:Propietario {ID_propietario: $id_propietario})-[:POSEE]->(t:Terreno) "
+        "MATCH (p:Propietario {ID_propietario: $id_propietario})-[:POSEIDO_POR]->(t:Terreno) "
         "RETURN t"
     )
     result = tx.run(query, id_propietario=id_propietario)
@@ -96,7 +141,7 @@ def get_clientes_by_terreno(tx, id_terreno):
     for cliente in clientes:
         formatted_result.append(f"Cliente: {cliente['Nombre_completo']}, Email: {cliente['Email']}, "
                                 f"Teléfono: {cliente['Telefono']}, Presupuesto: {cliente['Presupuesto']}, "
-                                f"ID: {cliente['ID_cliente']}, Intereses: {cliente['Intereses']}")
+                                f"ID: {cliente['ID_cliente']}")
     return "\n".join(formatted_result)
 
 
@@ -124,12 +169,21 @@ def get_interacciones_cliente_empleado(tx, id_cliente):
         "RETURN e"
     )
     result = tx.run(query, id_cliente=id_cliente)
-    interacciones=[record["e"git] for record in result]
+    interacciones=[record["e"] for record in result]
     formatted_result = []
     for interac in interacciones:
         liente = interac['c']
         empleado = interac['e']
         formatted_result.append(f"Cliente: {['Nombre_completo']} interactuó con Empleado: {empleado['Nombre_completo']}")
     return "\n".join(formatted_result)
+
+def get_sentenciageneral(tx,sentencia):
+    query=(sentencia)
+    result=tx.run(query)
+
+def get_consultageneral(tx,sentencia):
+    query=(sentencia)
+    result=tx.run(query)
+    return [record.data() for record in result]
 
 
