@@ -1,10 +1,8 @@
 class Terrenos:
     @staticmethod
     def get_prov_zona_id(prov_id, zona_id):
-        # Método para obtener todos los terrenos de una provincia específica y zona específica
         def query(tx):
             result = tx.run("""
-            MATCH (t:Terreno)-[:UBICADO_EN]->(z:Zona {ID_zona: $zona_id})
             MATCH (t)-[:UBICADO_EN]->(p:Provincia {ID_provincia: $prov_id})
             RETURN t.ID_terreno AS id, t.Ubicacion AS ubicacion, t.Precio AS precio, t.Tamaño AS tamaño
             """, zona_id=zona_id, prov_id=prov_id)
@@ -13,10 +11,9 @@ class Terrenos:
 
     @staticmethod
     def get_prov_id(prov_id):
-        # Método para obtener todos los terrenos de una provincia específica
         def query(tx):
             result = tx.run("""
-            MATCH (t:Terreno)-[:UBICADO_EN]->(p:Provincia {ID_provincia: $prov_id})
+            MATCH (t:Terreno)-[:UBICADO_EN]->(z:Zona {provincia: $prov_id})
             RETURN t.ID_terreno AS id, t.Ubicacion AS ubicacion, t.Precio AS precio, t.Tamaño AS tamaño
             """, prov_id=prov_id)
             return [record.data() for record in result]
@@ -24,7 +21,6 @@ class Terrenos:
 
     @staticmethod
     def get_zona_id(zona_id):
-        # Método para obtener todos los terrenos de una zona específica
         def query(tx):
             result = tx.run("""
             MATCH (t:Terreno)-[:UBICADO_EN]->(z:Zona {ID_zona: $zona_id})
@@ -35,13 +31,12 @@ class Terrenos:
 
     @staticmethod
     def get():
-        # Método para obtener todos los terrenos sin filtros
         def query(tx):
             result = tx.run("""
             MATCH (t:Terreno)
             RETURN t.ID_terreno AS id, t.Ubicacion AS ubicacion, t.Precio AS precio, t.Tamaño AS tamaño
             """)
-            return result
+            return [record.data() for record in result]
         return query
 
     @staticmethod
@@ -50,9 +45,9 @@ class Terrenos:
         def query(tx):
             if terreno_id:
                 result = tx.run("""
-                MATCH (t:Terreno {ID_terreno: $terreno_id})<-[:INTERESADO_EN]-(c:Cliente)
+                MATCH (t:Terreno {ID_terreno: $terreno_id})<-[:INTERESADO_EN]-(c:Cliente{ID_cliente: $cliente_id})
                 RETURN c.ID_cliente AS id, c.Nombre_completo AS nombre, c.Email AS email
-                """, terreno_id=terreno_id)
+                """, terreno_id=terreno_id, cliente_id=cliente_id)
             else:
                 result = tx.run("""
                 MATCH (c:Cliente {ID_cliente: $cliente_id})-[:INTERESADO_EN]->(t:Terreno)
@@ -90,28 +85,29 @@ class Terrenos:
         def query(tx):
             if propietario_id:
                 result = tx.run("""
-                MATCH (p:Propietario {ID_propietario: $propietario_id})-[:POSEE]->(t:Terreno)-[:UBICADO_EN]->(prov:Provincia {ID_provincia: $provincia_id})
+                MATCH (p:Propietario {ID_propietario: $propietario_id})-[:POSEE]->(t:Terreno)-[:UBICADO_EN]->(z:Zona {ID_provincia: $provincia_id})
                 RETURN t.ID_terreno AS id, t.Ubicacion AS ubicacion, t.Precio AS precio
                 """, propietario_id=propietario_id, provincia_id=provincia_id)
             else:
                 result = tx.run("""
-                MATCH (prop:Propietario)-[:POSEE]->(t:Terreno)-[:UBICADO_EN]->(prov:Provincia {ID_provincia: $provincia_id})
-                RETURN prop.ID_propietario AS id, prop.Nombre AS nombre, COUNT(t) AS cantidad_terrenos
+                MATCH (p:Propietario)-[:POSEE]->(t:Terreno)-[:UBICADO_EN]->(z:Zona {ID_provincia: $provincia_id})
+                RETURN p.ID_propietario AS id, p.Nombre AS nombre, COUNT(t) AS cantidad_terrenos
                 """, provincia_id=provincia_id)
             return [record.data() for record in result]
         return query
+
     @staticmethod
     def get_terrenos_disponibles_zona(zona_id= None):
         # Terrenos disponibles en una zona específica
         def query(tx):
             if zona_id:
                 result = tx.run("""
-                MATCH (t:Terreno {Estado: "Disponible"})-[:UBICADO_EN]->(z:Zona {ID_zona: $zona_id})
+                MATCH (t:Terreno {Estado: "En Venta"})-[:UBICADO_EN]->(z:Zona {ID_zona: $zona_id})
                 RETURN t.ID_terreno AS id, t.Ubicacion AS ubicacion, t.Precio AS precio
                 """, zona_id=zona_id)
             else:
                 result = tx.run("""
-                MATCH (z:Zona)<-[:UBICADO_EN]-(t:Terreno {Estado: "Disponible"})
+                MATCH (z:Zona)<-[:UBICADO_EN]-(t:Terreno {Estado: "En Venta"})
                 RETURN z.ID_zona AS id, z.Nombre_zona AS nombre, COUNT(t) AS terrenos_disponibles
                 """)
 
