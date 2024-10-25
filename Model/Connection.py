@@ -1,6 +1,6 @@
 from neo4j import GraphDatabase, Query
-
-class DAO:
+#s
+class Connection:
     def __init__(self, uri, user, password):
         self._driver = GraphDatabase.driver(uri, auth=(user, password))
 
