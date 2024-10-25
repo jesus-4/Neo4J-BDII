@@ -3,12 +3,13 @@ from neo4j import GraphDatabase
 
 from CrearAristas import asignar_empleado_zona, asociar_terreno_zona, cliente_interactua_empleado, cliente_interesado_en_terreno, vincular_terreno_propietario,asociar_zona_provincia
 from CrearNodos import crear_cliente, crear_empleado, crear_propietario, crear_terreno, crear_zona,crear_provincia
-from Qury import get_zonas_provincias,get_terrenos_por_zona,get_propietarios_terrenos,get_empleados_por_zona,get_clientes_by_terreno,get_sentenciageneral,get_consultageneral
-from Delet import delet_client_id, delet_zona_id
-from Conecction import Conecction
+from Connection import Connection
+from Clientes import Clientes
+from Empleados import Empleados
+from Terrenos import Terrenos
 #
 class GestionDao:
-      dao = Conecction()
+      dao = Connection()
 
       def get_terrenos(self,*,prov_id=None,zona_id=None,):
             resul=[]
@@ -30,7 +31,7 @@ class GestionDao:
             resul=[]
             if cliente_id is not None and terreno_id is not None:
                   #todos los terrenos que le interesa al cliente cliente_id y todos los clientes interesados por el terrenos terreno_id
-                  resul=self.execute_read(Terrenos.get_cliente_id(cliente_id))
+                  resul=self.execute_read(Terrenos.get_cliente_id(cliente_id, terreno_id))
             elif cliente_id is not None:
                   #todos los terrenos que le interesa al cliente cliente_id
                   resul=self.execute_read(Terrenos.get_cliente_id(cliente_id))
@@ -50,9 +51,9 @@ class GestionDao:
             elif provincia_id is not None:
                   #todos los propietaros con su cantidad de terreno en la provincia provincia_id
                   resul=self.execute_read(Terrenos.get_propietarios_provincia_id(provincia_id))
-            elif propietario_id is not None:
-                  #todos los terrenos de un propietario propietario_id
-                  resul=self.execute_read(Terrenos.get_propietario_id(propietario_id))
+            # elif propietario_id is not None:
+            #       #todos los terrenos de un propietario propietario_id                  #es el mismo que arriba - No seria un metodo de terreno
+            #       resul=self.execute_read(Terrenos.get_propietario_id(propietario_id))
             else:
                   #todos los propietarios con la cantidad de terenenos en cada provincia(en caso de no pasar parametros)
                   resul=self.execute_read(Terrenos.get_propietario_provincia())
@@ -166,7 +167,7 @@ class GestionDao:
             else:
                   print("Se necesita Id_empleado como minimo para crear un nodo Empleado")
 
-      def crear_nodo_cliente(self,*,id_cliente=None, nombre_completo=None, email=None, telefono=None, presupuesto=None)
+      def crear_nodo_cliente(self,*,id_cliente=None, nombre_completo=None, email=None, telefono=None, presupuesto=None):
             if id_cliente is not None:
                   if nombre_completo is not None and email is not None and telefono is not None and presupuesto is not None:
                         self.execute_write(crear_cliente,id_cliente, nombre_completo, email, telefono, presupuesto)
