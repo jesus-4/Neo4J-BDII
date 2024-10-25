@@ -6,7 +6,7 @@ from CrearNodos import crear_cliente, crear_empleado, crear_propietario, crear_t
 from Connection import Connection
 from Clientes import get_clientes_empleado,get_empleados_cliente,get_empleados_cliente_id,get_interacciones
 from Empleados import get_empleados_zona,get_empleados_zonas,get_zonas_empleado
-from Terrenos import get_terreno_id,get_prov_zona_id,get,get_prov_id,get_zona_id,get_cliente_id,get_clientes_terreno,get_propietarios_provincia_id
+from Terrenos import get_terreno_id,get_prov_zona_id,get,get_prov_id,get_zona_id,get_cliente_id,get_clientes_terreno,get_propietarios_provincia_id,get_terrenos_min_precio,get_terrenos_por_rango_precio,get_terrenos_max_precio,get_todos_terrenos_precio
 
 class GestionDao:
       def __init__(self):
@@ -52,9 +52,9 @@ class GestionDao:
             elif provincia_id is not None:
                   #todos los propietaros con su cantidad de terreno en la provincia provincia_id
                   resul=self.dao.execute_read(get_propietarios_provincia_id,provincia_id)
-            # elif propietario_id is not None:
-            #       #todos los terrenos de un propietario propietario_id                  #es el mismo que arriba - No seria un metodo de terreno
-            #       resul=self.dao.execute_read(get_propietario_id(propietario_id))
+            elif propietario_id is not None:
+                  #todos los terrenos de un propietario propietario_id                  #es el mismo que arriba - No seria un metodo de terreno
+                  resul=self.dao.execute_read(get_propietario_id(propietario_id))
             else:
                   #todos los propietarios con la cantidad de terenenos en cada provincia(en caso de no pasar parametros)
                   resul=self.dao.execute_read(get_propietario_provincia)
@@ -103,16 +103,16 @@ class GestionDao:
             resul = []
             if min_precio is not None and max_precio is not None:
                   # Terrenos cuyo precio está entre min_precio y max_precio
-                  resul = self.dao.execute_read(get_terrenos_por_rango_precio(min_precio, max_precio))
+                  resul = self.dao.execute_read(get_terrenos_por_rango_precio,min_precio, max_precio)
             elif min_precio is not None:
                   # Terrenos cuyo precio es mayor o igual a min_precio
-                  resul = self.dao.execute_read(get_terrenos_min_precio(min_precio))
+                  resul = self.dao.execute_read(get_terrenos_min_precio,min_precio)
             elif max_precio is not None:
                   # Terrenos cuyo precio es menor o igual a max_precio
-                  resul = self.dao.execute_read(get_terrenos_max_precio(max_precio))
+                  resul = self.dao.execute_read(get_terrenos_max_precio,max_precio)
             else:
                   # Todos los terrenos con sus precios
-                  resul = self.dao.execute_read(get_todos_terrenos_precio())
+                  resul = self.dao.execute_read(get_todos_terrenos_precio)
             return resul
 
       def add_nodo_provincia(self,*,id_provincia=None,provincia_name=None):

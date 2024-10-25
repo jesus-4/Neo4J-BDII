@@ -56,15 +56,36 @@ def get_clientes_terreno(tx):
 def get_propietarios_provincia_id(tx, provincia_id, propietario_id=None):
     if propietario_id:
         result = tx.run("""
-            MATCH (p:Propietario {ID_propietario: $propietario_id})-[:POSEE]->(t:Terreno)-[:UBICADO_EN]->(z:Zona {ID_provincia: $provincia_id})
-            RETURN t.ID_terreno AS id, t.Ubicacion AS ubicacion, t.Precio AS precio
+            MATCH (p:Propietario {ID_propietario: $propietario_id})<-[:POSEIDO_POR]-(t:Terreno)-[:UBICADO_EN]->(z:Zona)-[:PERTENECE_A]->(pr:Provincia{ID_provincia: $provincia_id})
+            RETURN t.ID_terreno AS Terreno,z.Nombre_zona AS Zona,pr.Nombre_provincia AS Provincia,p.Nombre_completo AS Propietario
             """, propietario_id=propietario_id, provincia_id=provincia_id)
     else:
         result = tx.run("""
-            MATCH (p:Propietario)-[:POSEE]->(t:Terreno)-[:UBICADO_EN]->(z:Zona {ID_provincia: $provincia_id})
-            RETURN p.ID_propietario AS id, p.Nombre AS nombre, COUNT(t) AS cantidad_terrenos
+            MATCH (p:Propietario)<-[:POSEIDO_POR]-(t:Terreno)-[:UBICADO_EN]->(z:Zona)-[:PERTENECE_A]->(pr:Provincia {ID_provincia: $provincia_id})
+            WITH p, COUNT(t) AS cantidad_terrenos
+            WHERE cantidad_terrenos > 0
+            RETURN p.ID_propietario AS Propietario, p.Nombre_completo AS nombre, cantidad_terrenos
             """, provincia_id=provincia_id)
     return [record.data() for record in result]
+
+def get_propietario_id(tx, propietario_id):
+    # Obtener todos los terrenos de un propietario específico
+    result = tx.run("""
+        MATCH (p:Propietario {ID_propietario: $propietario_id})-[:POSEIDO_POR]->(t:Terreno)-[:UBICADO_EN]->(z:Zona)
+        WITH p, COUNT(t) AS cantidad_terrenos
+        RETURN z.Nombre_zona,p.Nombre_completo AS Propietario, cantidad_terrenos
+        """, propietario_id=propietario_id)
+    return [record.data() for record in result]
+
+def get_propietario_provincia(tx):
+    result = tx.run("""
+            MATCH (p:Propietario)<-[:POSEIDO_POR]-(t:Terreno)-[:UBICADO_EN]->(z:Zona)-[:PERTENECE_A]->(pr:Provincia {ID_provincia: $provincia_id})
+            WITH p, COUNT(t) AS cantidad_terrenos
+            WHERE cantidad_terrenos > 0
+            RETURN p.ID_propietario AS Propietario, p.Nombre_completo AS nombre, cantidad_terrenos
+            """)
+    return [record.data() for record in result]
+
 
 def get_terrenos_disponibles_zona(tx, zona_id=None):
     if zona_id:
@@ -93,3 +114,18 @@ def get_terrenos_min_precio(tx, min_precio):
         RETURN t.ID_terreno AS id, t.Ubicacion AS ubicacion, t.Precio AS precio
         """, min_precio=min_precio)
     return [record.data() for record in result]
+
+def get_terrenos_max_precio(tx, max_precio):
+    result = tx.run("""
+        MATCH (t:Terreno)
+        WHERE t.Precio <= $max_precio
+        RETURN t.ID_terreno AS id, t.Ubicacion AS ubicacion, t.Precio AS precio
+        """, max_precio=max_precio)
+    return [record.data() for record in result]
+
+def get_todos_terrenos_precio(tx):
+    result = tx.run("""
+        MATCH (t:Terreno)
+        RETURN t.ID_terreno AS id, t.Ubicacion AS ubicacion, t.Precio AS precio
+        """)
+    return [record.data() for record in result] 
