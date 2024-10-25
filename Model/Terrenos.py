@@ -28,10 +28,10 @@ def get(tx):
     return [record.data() for record in result]
 
 def get_cliente_id(tx, cliente_id, terreno_id=None):
-    if terreno_id:
+    if terreno_id :
         result = tx.run("""
             MATCH (t:Terreno {ID_terreno: $terreno_id})<-[:INTERESADO_EN]-(c:Cliente{ID_cliente: $cliente_id})
-            RETURN c.ID_cliente AS id, c.Nombre_completo AS nombre, c.Email AS email
+            RETURN t.Tipo_zona AS Zona,c.ID_cliente AS id, c.Nombre_completo AS nombre, c.Email AS email
             """, terreno_id=terreno_id, cliente_id=cliente_id)
     else:
         result = tx.run("""
