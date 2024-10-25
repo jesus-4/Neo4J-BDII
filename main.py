@@ -3,7 +3,7 @@ from neo4j import GraphDatabase
 
 from CrearAristas import asignar_empleado_zona, asociar_terreno_zona, cliente_interactua_empleado, cliente_interesado_en_terreno, vincular_terreno_propietario,asociar_zona_provincia
 from CrearNodos import crear_cliente, crear_empleado, crear_propietario, crear_terreno, crear_zona,crear_provincia
-from Qury import get_zonas_provincias,get_terrenos_por_zona,get_propietarios_terrenos,get_empleados_por_zona,get_clientes_by_terreno,get_sentenciageneral,get_consultageneral
+from Query import get_zonas_provincias,get_terrenos_por_zona,get_propietarios_terrenos,get_empleados_por_zona,get_clientes_by_terreno,get_sentenciageneral,get_consultageneral
 from DAO import DAO
 
 def crear_nodos_ejemplo(dao):
