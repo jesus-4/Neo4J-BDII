@@ -6,6 +6,13 @@ def asignar_empleado_zona(tx, id_empleado, id_zona):
     )
     tx.run(query, id_empleado=id_empleado, id_zona=id_zona)
 
+def asociar_zona_provincia(tx, id_zona, id_provincia):
+    query = (
+        "MATCH (z:Zona {ID_zona: $id_zona}), (p:Provincia {ID_provincia: $id_provincia}) "
+        "CREATE (z)-[:PERTENECE_A]->(p)"
+    )
+    tx.run(query,id_zona=id_zona,id_provincia=id_provincia)
+
 def asociar_terreno_zona(tx, id_terreno, id_zona):
     query = (
         "MATCH (t:Terreno {ID_terreno: $id_terreno}), (z:Zona {ID_zona: $id_zona}) "
