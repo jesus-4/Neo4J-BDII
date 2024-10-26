@@ -2,7 +2,7 @@ def get_prov_zona_id(tx,prov_id, zona_id):
         result=[]
         result = tx.run("""
             MATCH (t:Terreno)-[:UBICADO_EN]->(z:Zona{ID_zona: $zona_id})-[:PERTENECE_A]->(p:Provincia {ID_provincia: $prov_id})
-            RETURN t.ID_terreno AS Terreno, z.Nombre_zona AS Zona, pr.Nombre_provincia AS Provincia;
+            RETURN t.ID_terreno AS Terreno, z.Nombre_zona AS Zona, p.Nombre_provincia AS Provincia;
             """, zona_id=zona_id, prov_id=prov_id)
         formatted_result = []
         for p in result:

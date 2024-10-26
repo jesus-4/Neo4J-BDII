@@ -8,7 +8,10 @@ def get_clientes_empleado(tx, empleado_id):
         c.Email AS email_cliente
         ORDER BY c.Nombre_completo;
         """, empleado_id=empleado_id)
-    return [record.data() for record in result]
+    formatted_result = []
+    for p in result:
+        formatted_result.append(f"id_cliente:{ p['id_cliente']}   nombre_cliente:{ p['nombre_cliente']} email_cliente:{ p['email_cliente']} ")
+    return "\n".join(formatted_result) 
 
 def get_interacciones(tx):
     # Obtener todas las interacciones entre clientes y empleados
@@ -17,7 +20,10 @@ def get_interacciones(tx):
         RETURN c.ID_cliente AS cliente_id, c.Nombre_completo AS cliente_nombre,
                e.ID_empleado AS empleado_id, e.Nombre_completo AS empleado_nombre
         """)
-    return [record.data() for record in result]
+    formatted_result = []
+    for p in result:
+        formatted_result.append(f"cliente_id:{ p['cliente_id']}   cliente_nombre:{ p['cliente_nombre']} empleado_id:{ p['empleado_id']} empleado_nombre:{ p['empleado_nombre']} ")
+    return "\n".join(formatted_result) 
 
 def get_empleados_cliente_id(tx, cliente_id, empleado_id):
     # Obtener detalles de interacción entre un cliente y un empleado específicos
@@ -29,7 +35,10 @@ def get_empleados_cliente_id(tx, cliente_id, empleado_id):
         t.ID_terreno AS Terreno_de_interes,
         z.Nombre_zona AS Zona;
         """, cliente_id=cliente_id, empleado_id=empleado_id)
-    return [record.data() for record in result]
+    formatted_result = []
+    for p in result:
+        formatted_result.append(f"nombre_cliente:{ p['nombre_cliente']}   nombre_empleado:{ p['nombre_empleado']} Terreno_de_interes:{ p['Terreno_de_interes']} Zona:{ p['Zona']} ")
+    return "\n".join(formatted_result)
 
 def get_empleados_cliente(tx, cliente_id):
     # Obtener todos los empleados con los que un cliente específico ha interactuado
@@ -41,4 +50,7 @@ def get_empleados_cliente(tx, cliente_id):
         e.Email AS email_empleado
         ORDER BY e.Nombre_completo;
         """, cliente_id=cliente_id)
-    return [record.data() for record in result]
+    formatted_result = []
+    for p in result:
+        formatted_result.append(f"id_empleado:{ p['id_empleado']}   nombre_empleado:{ p['nombre_empleado']} email_empleado:{ p['email_empleado']}  ")
+    return "\n".join(formatted_result)

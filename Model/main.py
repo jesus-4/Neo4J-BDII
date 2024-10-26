@@ -4,7 +4,7 @@ gestor=GestionDao()
 terrenos=[]
 #carga de nodos
 # Crear Provincias
-
+"""
 gestor.add_nodo_provincia(id_provincia="Pro1",provincia_name="La Rioja")
 gestor.add_nodo_provincia(id_provincia="Pro2",provincia_name="Córdoba")
 gestor.add_nodo_provincia(id_provincia="Pro3",provincia_name="Buenos Aires")
@@ -105,8 +105,8 @@ gestor.relacion_cliente_empleado(id_cliente="C5", id_empleado="E5")
 gestor.relacion_cliente_empleado(id_cliente="C6", id_empleado="E3")
 gestor.relacion_cliente_empleado(id_cliente="C6", id_empleado="E1")
 gestor.relacion_cliente_empleado(id_cliente="C7", id_empleado="E7")
-
-#terrenos=gestor.get_terrenos(prov_id="Pro1",zona_id="Z1")
+"""
+terrenos=gestor.get_terrenos(prov_id="Pro1",zona_id=None)
 #terrenos=gestor.get_clientes_terrenos(cliente_id="C1",terreno_id="T1")
 #terrenos=gestor.get_terrenos_propietarios(provincia_id="Pro1",propietario_id="P1")
 #terrenos=gestor.get_terrenos_por_precio(min_precio=2000, max_precio=85000)
