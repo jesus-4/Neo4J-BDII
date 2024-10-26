@@ -56,33 +56,45 @@ def get_clientes_terreno(tx):
 def get_propietarios_provincia_id(tx, provincia_id, propietario_id=None):
     if propietario_id:
         result = tx.run("""
-            MATCH (p:Propietario {ID_propietario: $propietario_id})<-[:POSEIDO_POR]-(t:Terreno)-[:UBICADO_EN]->(z:Zona)-[:PERTENECE_A]->(pr:Provincia{ID_provincia: $provincia_id})
-            RETURN t.ID_terreno AS Terreno,z.Nombre_zona AS Zona,pr.Nombre_provincia AS Provincia,p.Nombre_completo AS Propietario
+            MATCH (p:Propietario {ID_propietario: $propietario_id})<-[:POSEIDO_POR]-(t:Terreno)-[:UBICADO_EN]->(z:Zona)-[:PERTENECE_A]->(pr:Provincia {ID_provincia: $provincia_id})
+            RETURN 
+            p.ID_propietario AS id_propietario, 
+            p.Nombre_completo AS Nombre, 
+            COUNT(t) AS cantidad_terrenos;
             """, propietario_id=propietario_id, provincia_id=provincia_id)
     else:
         result = tx.run("""
             MATCH (p:Propietario)<-[:POSEIDO_POR]-(t:Terreno)-[:UBICADO_EN]->(z:Zona)-[:PERTENECE_A]->(pr:Provincia {ID_provincia: $provincia_id})
             WITH p, COUNT(t) AS cantidad_terrenos
-            WHERE cantidad_terrenos > 0
-            RETURN p.ID_propietario AS Propietario, p.Nombre_completo AS nombre, cantidad_terrenos
+            RETURN 
+            p.ID_propietario AS id, p.Nombre_completo AS nombre,cantidad_terrenos
+            ORDER BY cantidad_terrenos DESC;
             """, provincia_id=provincia_id)
     return [record.data() for record in result]
 
 def get_propietario_id(tx, propietario_id):
     # Obtener todos los terrenos de un propietario específico
     result = tx.run("""
-        MATCH (p:Propietario {ID_propietario: $propietario_id})-[:POSEIDO_POR]->(t:Terreno)-[:UBICADO_EN]->(z:Zona)
-        WITH p, COUNT(t) AS cantidad_terrenos
-        RETURN z.Nombre_zona,p.Nombre_completo AS Propietario, cantidad_terrenos
+        MATCH (p:Propietario {ID_propietario: $propietario_id})<-[:POSEIDO_POR]-(t:Terreno)-[:UBICADO_EN]->(z:Zona)-[:PERTENECE_A]->(pr:Provincia)
+        RETURN 
+        t.ID_terreno AS id_terreno, 
+        t.Tipo_zona AS Zona_terreno, 
+        z.Nombre_zona AS Zona, 
+        pr.Nombre_provincia AS Provincia, 
+        p.Nombre_completo AS propietario;
         """, propietario_id=propietario_id)
     return [record.data() for record in result]
 
 def get_propietario_provincia(tx):
     result = tx.run("""
-            MATCH (p:Propietario)<-[:POSEIDO_POR]-(t:Terreno)-[:UBICADO_EN]->(z:Zona)-[:PERTENECE_A]->(pr:Provincia {ID_provincia: $provincia_id})
-            WITH p, COUNT(t) AS cantidad_terrenos
-            WHERE cantidad_terrenos > 0
-            RETURN p.ID_propietario AS Propietario, p.Nombre_completo AS nombre, cantidad_terrenos
+            MATCH (p:Propietario)<-[:POSEIDO_POR]-(t:Terreno)-[:UBICADO_EN]->(z:Zona)-[:PERTENECE_A]->(pr:Provincia)
+            WITH p, pr, COUNT(t) AS cantidad_terrenos
+            RETURN 
+            p.ID_propietario AS id_propietario, 
+            p.Nombre_completo AS nombre_propietario, 
+            pr.Nombre_provincia AS provincia, 
+            cantidad_terrenos
+            ORDER BY provincia, cantidad_terrenos DESC;
             """)
     return [record.data() for record in result]
 
@@ -90,13 +102,17 @@ def get_propietario_provincia(tx):
 def get_terrenos_disponibles_zona(tx, zona_id=None):
     if zona_id:
         result = tx.run("""
-            MATCH (t:Terreno {Estado: "En Venta"})-[:UBICADO_EN]->(z:Zona {ID_zona: $zona_id})
-            RETURN t.ID_terreno AS id, t.Ubicacion AS ubicacion, t.Precio AS precio
+            MATCH (t:Terreno {Estado: "En Venta"})-[:UBICADO_EN]->(z:Zona {ID_zona:$zona_id})
+            RETURN t.ID_terreno AS id, z.Nombre_zona AS Zona, t.Precio AS precio
             """, zona_id=zona_id)
     else:
         result = tx.run("""
-            MATCH (z:Zona)<-[:UBICADO_EN]-(t:Terreno {Estado: "En Venta"})
-            RETURN z.ID_zona AS id, z.Nombre_zona AS nombre, COUNT(t) AS terrenos_disponibles
+            MATCH (t:Terreno {Estado: "En Venta"})-[:UBICADO_EN]->(z:Zona)
+            RETURN 
+            z.Nombre_zona AS zona, 
+            COLLECT(t.ID_terreno) AS terrenos_en_venta, 
+            COUNT(t) AS cantidad_terrenos_en_venta
+            ORDER BY zona;
             """)
     return [record.data() for record in result]
 def get_terrenos_por_rango_precio(tx, min_precio, max_precio):

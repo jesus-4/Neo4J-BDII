@@ -6,7 +6,7 @@ from CrearNodos import crear_cliente, crear_empleado, crear_propietario, crear_t
 from Connection import Connection
 from Clientes import get_clientes_empleado,get_empleados_cliente,get_empleados_cliente_id,get_interacciones
 from Empleados import get_empleados_zona,get_empleados_zonas,get_zonas_empleado
-from Terrenos import get_terreno_id,get_prov_zona_id,get,get_prov_id,get_zona_id,get_cliente_id,get_clientes_terreno,get_propietarios_provincia_id,get_terrenos_min_precio,get_terrenos_por_rango_precio,get_terrenos_max_precio,get_todos_terrenos_precio
+from Terrenos import get_terreno_id,get_prov_zona_id,get,get_prov_id,get_zona_id,get_cliente_id,get_clientes_terreno,get_propietarios_provincia_id,get_terrenos_min_precio,get_terrenos_por_rango_precio,get_terrenos_max_precio,get_todos_terrenos_precio,get_propietario_id,get_propietario_provincia,get_terrenos_disponibles_zona
 
 class GestionDao:
       def __init__(self):
@@ -47,14 +47,14 @@ class GestionDao:
       def get_terrenos_propietarios(self,*,provincia_id=None,propietario_id=None):
             resul=[]
             if propietario_id is not None and provincia_id is not None:
-                  #todos los propietaros con su cantidad de terreno en la provincia provincia_id y todos los terrenos de un propietario propietario_id
+                  #lA cantidad de terenos del propietario propietario_id en la provincia provincia_id
                   resul=self.dao.execute_read(get_propietarios_provincia_id,provincia_id,propietario_id)
             elif provincia_id is not None:
                   #todos los propietaros con su cantidad de terreno en la provincia provincia_id
                   resul=self.dao.execute_read(get_propietarios_provincia_id,provincia_id)
             elif propietario_id is not None:
                   #todos los terrenos de un propietario propietario_id                  #es el mismo que arriba - No seria un metodo de terreno
-                  resul=self.dao.execute_read(get_propietario_id(propietario_id))
+                  resul=self.dao.execute_read(get_propietario_id,propietario_id)
             else:
                   #todos los propietarios con la cantidad de terenenos en cada provincia(en caso de no pasar parametros)
                   resul=self.dao.execute_read(get_propietario_provincia)
@@ -76,7 +76,7 @@ class GestionDao:
       def get_clientes_empleados(self, *, cliente_id=None, empleado_id=None):
             resul = []
             if cliente_id is not None and empleado_id is not None:
-                  # Todos los empleados con los que interactuó un cliente cliente_id y Todos los clientes que interactuaron con un empleado empleado_id
+                  #Todos los terenos que le interesa al cliente 
                   resul = self.dao.execute_read(get_empleados_cliente_id,cliente_id,empleado_id,)
             elif cliente_id is not None:
                   # Todos los empleados con los que interactuó un cliente cliente_id
@@ -93,10 +93,10 @@ class GestionDao:
             resul = []
             if zona_id is not None:
                   # Todos los terrenos disponibles en la zona zona_id
-                  resul = self.dao.execute_read(get_terrenos_disponibles_zona(zona_id))
+                  resul = self.dao.execute_read(get_terrenos_disponibles_zona,zona_id)
             else:
                   # Todas las zonas con los terreno disponible
-                  resul = self.dao.execute_read(get_zonas_con_disponibilidad())
+                  resul = self.dao.execute_read(get_terrenos_disponibles_zona,zona_id)
             return resul
 
       def get_terrenos_por_precio(self, *, min_precio=None, max_precio=None):
