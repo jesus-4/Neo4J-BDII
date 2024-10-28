@@ -1,18 +1,3 @@
-def get_clientes_empleado(tx, empleado_id):
-    # Obtener todos los clientes que han interactuado con un empleado específico
-    result = tx.run("""
-        MATCH (e:Empleado {ID_empleado: $empleado_id})<-[:INTERACTUA_CON]-(c:Cliente)
-        RETURN 
-        c.ID_cliente AS id_cliente, 
-        c.Nombre_completo AS nombre_cliente, 
-        c.Email AS email_cliente
-        ORDER BY c.Nombre_completo;
-        """, empleado_id=empleado_id)
-    formatted_result = []
-    for p in result:
-        formatted_result.append(f"id_cliente:{ p['id_cliente']}   nombre_cliente:{ p['nombre_cliente']} email_cliente:{ p['email_cliente']} ")
-    return "\n".join(formatted_result) 
-
 def get_interacciones(tx):
     # Obtener todas las interacciones entre clientes y empleados
     result = tx.run("""
@@ -38,6 +23,21 @@ def get_empleados_cliente_id(tx, cliente_id, empleado_id):
     formatted_result = []
     for p in result:
         formatted_result.append(f"nombre_cliente:{ p['nombre_cliente']}   nombre_empleado:{ p['nombre_empleado']} Terreno_de_interes:{ p['Terreno_de_interes']} Zona:{ p['Zona']} ")
+    return "\n".join(formatted_result) 
+
+def get_clientes_empleado(tx, empleado_id):
+    # Obtener todos los clientes que han interactuado con un empleado específico
+    result = tx.run("""
+        MATCH (e:Empleado {ID_empleado: $empleado_id})<-[:INTERACTUA_CON]-(c:Cliente)
+        RETURN 
+        c.ID_cliente AS id_cliente, 
+        c.Nombre_completo AS nombre_cliente, 
+        c.Email AS email_cliente
+        ORDER BY c.Nombre_completo;
+        """, empleado_id=empleado_id)
+    formatted_result = []
+    for p in result:
+        formatted_result.append(f"id_cliente:{ p['id_cliente']}   nombre_cliente:{ p['nombre_cliente']} email_cliente:{ p['email_cliente']} ")
     return "\n".join(formatted_result)
 
 def get_empleados_cliente(tx, cliente_id):

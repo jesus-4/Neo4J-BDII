@@ -11,7 +11,8 @@ from Terrenos import get_terreno_id,get_prov_zona_id,get,get_prov_id,get_zona_id
 class GestionDao:
       def __init__(self):
             self.dao = Connection()
-      
+
+
       def get_terrenos(self,*,prov_id=None,zona_id=None):
             resul=[]
             if  zona_id is not None and prov_id is not None:
