@@ -1,8 +1,8 @@
 # Neo4J-BDII
-Grupo: 
-* Claramonte Jesus
-* Cordoba Javier
-* Paez cielo 
+Equipo de trabajo: 
+* Claramonte Jesus claramontejesus@gmail.com
+* Cordoba Javier javiercordoba0899@gmail.com
+* Paez cielo cieloopaezz@gmail.com
 
 Requisitos
 Descargar virtualenv
