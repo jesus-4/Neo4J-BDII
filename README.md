@@ -16,3 +16,6 @@ Activar entorno virutal WS
 Descargar dependencias
 
     pip install neo4j 
+Notebook:
+
+    https://colab.research.google.com/drive/1ZaXHhe9BD8iH_66l48EspzYnfBIdxklh?usp=sharing
